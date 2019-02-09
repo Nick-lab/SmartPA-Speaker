@@ -10,9 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "audio-mixer": "^2.1.1",
+    "lame": "^1.2.4",
     "local-devices": "^1.1.1",
-    "node-lame": "^1.2.0",
     "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0"
+    "socket.io-client": "^2.2.0",
+    "speaker": "^0.4.1"
   }
 }
