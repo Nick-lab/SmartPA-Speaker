@@ -19,23 +19,35 @@ function tryConnect(port){
             if(err){
                 res({error: 'Command Failed'});
             }else{
-                devices = stdout.match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/g);
-                devices.forEach((device, k) => {
-                    if(device){
-                        console.log('Testing: ', device);
-                        let socket = io('http://'+device+':'+port);
-                        socket.on('connect', ()=>{
-                            res({socket: socket});
+                connected = false
+                while(!connected){
+                    devices = stdout.match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/g);
+                    if(devices.length > 1){
+                        devices.forEach((device, k) => {
+                            if(device){
+                                console.log('Testing: ', device);
+                                let socket = io('http://'+device+':'+port);
+                                socket.on('connect', ()=>{
+                                    connected = true;
+                                    res({socket: socket});
+                                });
+                                socket.emit('speaker-connect');
+                            }
                         });
-                        socket.emit('speaker-connect');
+                    }else{
+                        let addressArr = devices[0].split('.');
+                        for(let i = 255; i > 0; i--){
+                            let device = addressArr[0]+'.'+addressArr[1]+'.'+addressArr[2]+'.'+i;
+                            console.log('Testing: ', device);
+                            let socket = io('http://'+device+':'+port);
+                            socket.on('connect', ()=>{
+                                connected = true;
+                                res({socket: socket});
+                            });
+                            socket.emit('speaker-connect');
+                        }
                     }
-                    if(k == devices.length - 1){
-                        setTimeout(()=>{
-                            res({error: 'No connection found'});
-                            
-                        }, 2000);
-                    }
-                });
+                }
             }
         });
     })
