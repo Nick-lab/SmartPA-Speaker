@@ -19,9 +19,8 @@ function tryConnect(port){
             if(err){
                 res({error: 'Command Failed'});
             }else{
-                rows = stdout.split('\r\n');
-                rows.forEach((row, k) => {
-                    let device = row.match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/g);
+                devices = stdout.match(/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/g);
+                devices.forEach((device, k) => {
                     if(device){
                         console.log('Testing: ', device);
                         let socket = io('http://'+device+':'+port);
@@ -30,7 +29,7 @@ function tryConnect(port){
                         });
                         socket.emit('speaker-connect');
                     }
-                    if(k == rows.length - 1){
+                    if(k == devices.length - 1){
                         setTimeout(()=>{
                             res({error: 'No connection found'});
                             
